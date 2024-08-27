@@ -5,8 +5,11 @@ import sqlite3
 app = FastAPI()
 
 # Customer model
+from pydantic import BaseModel
+
 class Customer(BaseModel):
     name: str
+    phone: str
 
 # Database helper
 def get_db_connection():
@@ -22,7 +25,7 @@ def create_customer(customer: Customer):
     try:
         with get_db_connection() as conn:
             c = conn.cursor()
-            c.execute("INSERT INTO customers (name) VALUES (?)", (customer.name,))
+            c.execute("INSERT INTO customers (name, phone) VALUES (?, ?)", (customer.name, customer.phone))
             conn.commit()
             return {"message": "Customer created"}
     except sqlite3.Error as e:
